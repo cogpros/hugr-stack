@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Hugr Stack — verification by otherness</title>
+<title>The Stack Artifact — verification by otherness</title>
 <style>
 :root{
   --paper:#edefe6; --paper2:#e4e7db; --card:#f6f7f1; --ink:#1c2433; --ink2:#4a5462; --ink3:#77808c;
@@ -187,10 +187,10 @@ footer{margin-top:52px;border-top:3px double var(--ink);padding-top:16px}
   <h1>THE STACK ARTIFACT<br><span class="oth">and the importance of being verified by others</span></h1>
   <p class="dek">One operator, one navigator, and a crew built on a single doctrine: no claim ships on the word of the mind that made it.</p>
   <div class="statusline">
-    <span>1 human + 12 standing agents + on-demand crews</span>
-    <span>4 model vendors + local + deterministic</span>
-    <span>5 scheduler homes · 1 event bus</span>
-    <span>every session measured (Ghost Hours)</span>
+    <span>1 human + 9 standing agents + spawned crews and gates</span>
+    <span>3 model vendors + local + deterministic</span>
+    <span>6 scheduler homes · 1 event bus</span>
+    <span>measured at every seal (Ghost Hours)</span>
   </div>
   <div class="legend" role="note">
     <em>On this chart, color is substrate. A verification chain that crosses colors is the doctrine, drawn.</em>
@@ -252,7 +252,7 @@ footer{margin-top:52px;border-top:3px double var(--ink);padding-top:16px}
       <dl class="kv"><dt>station</dt><dd>launchd keep-alive, own tmux sessions, nightly 03:00 day-seals</dd></dl>
       <div class="chips"><span class="chip c-anthropic">claude cli · sonnet</span></div></div>
     <div class="card"><span class="role">night shift</span><h3>Draumr</h3><p>Nightly dream-consolidation on a local model — propose-only: nothing it writes is canon; proposals queue for the operator's morning ruling, so the seal stays with the hugr. It caught a false seal its first night out. Temporal otherness: tomorrow's reader checking today's writer.</p>
-      <dl class="kv"><dt>station</dt><dd>cron, 02:00–04:00, while the operator sleeps</dd><dt>audits</dt><dd>the day's memory writes and seals</dd></dl>
+      <dl class="kv"><dt>station</dt><dd>hermes cron, nightly, while the operator sleeps</dd><dt>audits</dt><dd>the day's memory writes and seals</dd></dl>
       <div class="chips"><span class="chip c-local">gemma 26b</span></div></div>
     <div class="card"><span class="role">tripwires</span><h3>Detectors</h3><p>Deterministic detector layer with a mutual-watch watchdog — the otherness of no-model-at-all: code that cannot share an LLM's blind spot, watching the LLMs.</p>
       <dl class="kv"><dt>station</dt><dd>launchd, 5-min tick + isolated watchdog; the two watch each other</dd><dt>audits</dt><dd>QM silence, fabrication claims, watchdog exits — page-tier when armed</dd></dl>
@@ -355,7 +355,7 @@ footer{margin-top:52px;border-top:3px double var(--ink);padding-top:16px}
   <div class="eyebrow">COMMS DECK — HOW THE FLEET STAYS WIRED</div>
   <div class="deck">
     <div class="card"><h3>Event bus</h3><p>One append-only <code>bus.jsonl</code>: every cron, skill fire, seal, and verdict emits. Mirrored to SQLite, rotated nightly, digested into memory.</p></div>
-    <div class="card"><h3>Five scheduler homes</h3><p>Operator crontab · launchd · hermes cron (~50 jobs) · gateway cron · live daemons. Rule zero: absence from one list is not absence.</p></div>
+    <div class="card"><h3>Six scheduler homes</h3><p>Operator crontab · launchd · hermes cron (~50 jobs) · gateway cron · live daemons · hermes swarm sessions — the sixth was found only when the operator corrected the census. Rule zero: absence from one list is not absence.</p></div>
     <div class="card"><h3>Kanban</h3><p>Hermes boards (9). The board is the memory for open work; no ticket exists without a micro-baton to feed its restart.</p></div>
     <div class="card"><h3>Dashboards</h3><p>Pipes board, Perch (the owls' page), Vedrfolnir tiles, field reports — the operator's read surfaces.</p></div>
     <div class="card"><h3>Memory, single-writer</h3><p>Layered: session memory (EOM writes) · cron digests · wiki. One pen per layer, no clobbered pages; recall via qmd + gbrain.</p></div>
@@ -411,13 +411,13 @@ footer{margin-top:52px;border-top:3px double var(--ink);padding-top:16px}
   <div class="stats">
     <div class="stat"><span class="n">52</span><span class="l">sessions sealed in 8 days</span></div>
     <div class="stat"><span class="n">11</span><span class="l">arcs, 9 sessions at fw-c 8+</span></div>
-    <div class="stat"><span class="n">4</span><span class="l">otherness proofs, live</span></div>
+    <div class="stat"><span class="n">5</span><span class="l">otherness proofs, live</span></div>
     <div class="stat"><span class="n">5</span><span class="l">rungs on the ladder</span></div>
   </div>
 </section>
 
 <section class="sect">
-  <div class="eyebrow">GLOSSARY — STACK TERMS THAT LAND ON THIS SHEET WITHOUT THEIR DEFINITIONS</div>
+  <div class="eyebrow">GLOSSARY — STACK TERMS, IN THE OPERATOR'S ORDER</div>
   <div class="gloss">
     <div class="g"><dt>1. hugr</dt><dd>Old Norse for mind. The operator + prosthetic pair treated as one cognitive unit — the "we" that does the work neither half could do alone. The unit of account for everything on this sheet.</dd></div>
     <div class="g"><dt>2. AICP</dt><dd>AI-Integrated Cognitive Prosthetics — the research program this stack is both the instrument and the case study for. The operator is documenting what he's building as he builds it.</dd></div>
@@ -447,7 +447,7 @@ footer{margin-top:52px;border-top:3px double var(--ink);padding-top:16px}
 </section>
 
 <footer>
-  <p class="ghnote">Every underlined term on this sheet is a public receipt — shipped, documented, checkable by a stranger: <a class="gh" href="https://github.com/cogpros" target="_blank" rel="noopener">github.com/cogpros</a> (20 public repos, incl. <a class="gh" href="https://github.com/cogpros/verify-citation" target="_blank" rel="noopener">verify-citation</a>, <a class="gh" href="https://github.com/cogpros/ratatoskr" target="_blank" rel="noopener">ratatoskr</a>, <a class="gh" href="https://github.com/cogpros/cold-read" target="_blank" rel="noopener">cold-read</a>, <a class="gh" href="https://github.com/cogpros/hugr-solve" target="_blank" rel="noopener">hugr-solve</a>, <a class="gh" href="https://github.com/cogpros/checkpoint" target="_blank" rel="noopener">checkpoint</a>, <a class="gh" href="https://github.com/cogpros/eyeofhorus" target="_blank" rel="noopener">eyeofhorus</a>, <a class="gh" href="https://github.com/cogpros/system-audit" target="_blank" rel="noopener">system-audit</a>). The chart practices its own doctrine: do not trust it — click it. Comments and arguments welcome: <a class="gh" href="https://github.com/cogpros/hugr-stack/discussions" target="_blank" rel="noopener">GitHub Discussions</a>.</p>
+  <p class="ghnote">Every underlined term on this sheet is a public receipt — shipped, documented, checkable by a stranger: <a class="gh" href="https://github.com/cogpros" target="_blank" rel="noopener">github.com/cogpros</a> (incl. <a class="gh" href="https://github.com/cogpros/verify-citation" target="_blank" rel="noopener">verify-citation</a>, <a class="gh" href="https://github.com/cogpros/ratatoskr" target="_blank" rel="noopener">ratatoskr</a>, <a class="gh" href="https://github.com/cogpros/cold-read" target="_blank" rel="noopener">cold-read</a>, <a class="gh" href="https://github.com/cogpros/hugr-solve" target="_blank" rel="noopener">hugr-solve</a>, <a class="gh" href="https://github.com/cogpros/checkpoint" target="_blank" rel="noopener">checkpoint</a>, <a class="gh" href="https://github.com/cogpros/eyeofhorus" target="_blank" rel="noopener">eyeofhorus</a>, <a class="gh" href="https://github.com/cogpros/system-audit" target="_blank" rel="noopener">system-audit</a>). The chart practices its own doctrine: do not trust it — click it. Comments and arguments welcome: <a class="gh" href="https://github.com/cogpros/hugr-stack/discussions" target="_blank" rel="noopener">GitHub Discussions</a>.</p>
 <p class="colophon">EOM is named for Enrique of Malacca — the first human known to circumnavigate the globe. History gave the credit to his captain, Magellan. This chart exists so the record is kept right this time: the unit of work is the pair, and every claim on it was checked by someone who didn't write it.</p>
 </footer>
 

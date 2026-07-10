@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Hugr Stack — verification by otherness</title>
+<style>
+:root{
+  --paper:#edefe6; --paper2:#e4e7db; --card:#f6f7f1; --ink:#1c2433; --ink2:#4a5462; --ink3:#77808c;
+  --rule:#c9cdbd; --grid:#dfe2d4;
+  --anthropic:#2f5aa8; --xai:#b8432a; --local:#0a90ab; --zhipu:#7a4a9e; --human:#a8842c; --det:#5c6672;
+  --other:#b8432a; --other-soft:#b8432a22;
+  --chipink:#fff;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#10151d; --paper2:#0b0f16; --card:#171d27; --ink:#dfe4ea; --ink2:#a8b1bc; --ink3:#7d8794;
+    --rule:#2b3442; --grid:#1c232e;
+    --anthropic:#5f8ad6; --xai:#d05a3f; --local:#279ab2; --zhipu:#a273d0; --human:#b58a2e; --det:#8b95a0;
+    --other:#d05a3f; --other-soft:#d05a3f2b;
+    --chipink:#0b0f16;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10151d; --paper2:#0b0f16; --card:#171d27; --ink:#dfe4ea; --ink2:#a8b1bc; --ink3:#7d8794;
+  --rule:#2b3442; --grid:#1c232e;
+  --anthropic:#5f8ad6; --xai:#d05a3f; --local:#279ab2; --zhipu:#a273d0; --human:#b58a2e; --det:#8b95a0;
+  --other:#d05a3f; --other-soft:#d05a3f2b;
+  --chipink:#0b0f16;
+}
+:root[data-theme="light"]{
+  --paper:#edefe6; --paper2:#e4e7db; --card:#f6f7f1; --ink:#1c2433; --ink2:#4a5462; --ink3:#77808c;
+  --rule:#c9cdbd; --grid:#dfe2d4;
+  --anthropic:#2f5aa8; --xai:#b8432a; --local:#0a90ab; --zhipu:#7a4a9e; --human:#a8842c; --det:#5c6672;
+  --other:#b8432a; --other-soft:#b8432a22;
+  --chipink:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:56px 56px;
+  font:16px/1.55 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  padding:0 0 72px;
+}
+.wrap{max-width:1060px;margin:0 auto;padding:0 26px}
+.eyebrow{font:700 12px/1.4 "Avenir Next","Futura","Trebuchet MS",ui-sans-serif,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3)}
+.eyebrow b{color:var(--other)}
+header{padding:52px 0 10px;border-bottom:3px double var(--ink);margin-bottom:8px;position:relative}
+h1{font:800 clamp(38px,6vw,64px)/1.02 "Avenir Next","Futura","Trebuchet MS",ui-sans-serif,sans-serif;letter-spacing:-.02em;margin:10px 0 6px;text-wrap:balance}
+h1 .oth{color:var(--other)}
+.dek{font-style:italic;font-size:clamp(17px,2.2vw,21px);color:var(--ink2);max-width:62ch;margin:8px 0 20px}
+.statusline{display:flex;flex-wrap:wrap;gap:8px 20px;padding:14px 0 18px;font:600 12px/1.5 "Avenir Next",ui-sans-serif,sans-serif;letter-spacing:.05em;color:var(--ink2)}
+.statusline span::before{content:"◆ ";color:var(--other);font-size:9px;vertical-align:2px}
+h2{font:800 21px/1.2 "Avenir Next","Futura",ui-sans-serif,sans-serif;letter-spacing:.01em;margin:0 0 4px}
+.sect{margin:44px 0 0}
+.sect>.eyebrow{border-bottom:1px solid var(--rule);padding-bottom:6px;margin-bottom:16px}
+.sect>.eyebrow::before{content:"— ";color:var(--other)}
+p{margin:6px 0 10px}
+.muted{color:var(--ink3);font-size:.92em}
+.chip{display:inline-block;border-radius:3px;padding:2px 8px;font:700 10.5px/1.6 ui-monospace,Menlo,monospace;letter-spacing:.06em;color:var(--chipink);text-transform:uppercase;white-space:nowrap}
+.chip.outline{background:transparent;border:1.5px solid var(--det);color:var(--ink2)}
+.c-anthropic{background:var(--anthropic)}.c-xai{background:var(--xai)}.c-local{background:var(--local)}.c-zhipu{background:var(--zhipu)}.c-human{background:var(--human)}.c-det{background:var(--det)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:12px 16px;margin:14px 0 0;font:600 12.5px/1.6 "Avenir Next",ui-sans-serif,sans-serif}
+.legend .k{display:flex;gap:7px;align-items:center;color:var(--ink2)}
+.legend .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+.legend em{font:italic 600 12.5px/1.5 Georgia,serif;color:var(--ink2)}
+/* hero thesis */
+.thesis{background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:26px 30px;margin-top:14px;position:relative;overflow:hidden}
+.thesis::before{content:"";position:absolute;inset:0 auto 0 0;width:7px;background:var(--other)}
+.thesis h2{font-size:clamp(24px,3.4vw,34px)}
+.thesis p{font-size:clamp(16px,2vw,18.5px);max-width:70ch}
+.axiom{font:italic 15px/1.6 Georgia,serif;color:var(--ink2);border-left:3px solid var(--rule);padding-left:14px;margin-top:12px}
+/* ladder */
+.ladder{display:grid;gap:0;margin-top:6px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--card)}
+.rung{display:grid;grid-template-columns:74px 200px 1fr;gap:18px;padding:17px 20px;border-bottom:1px solid var(--rule);align-items:start}
+.rung:last-child{border-bottom:none}
+.rung .n{font:800 30px/1 "Avenir Next","Futura",ui-sans-serif,sans-serif;color:var(--ink3)}
+.rung .n small{display:block;font:700 9.5px/1.6 ui-monospace,Menlo,monospace;letter-spacing:.14em;color:var(--other);text-transform:uppercase;margin-top:3px}
+.rung h3{margin:0;font:800 16.5px/1.3 "Avenir Next",ui-sans-serif,sans-serif}
+.rung .seats{margin-top:7px;display:flex;flex-wrap:wrap;gap:5px}
+.rung p{margin:0;font-size:15px;color:var(--ink2)}
+.rung.top{background:var(--other-soft)}
+.rung.top .n{color:var(--other)}
+/* cards grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px;margin-top:6px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:9px;padding:16px 18px 14px;position:relative}
+.card h3{margin:0 0 3px;font:800 16px/1.25 "Avenir Next",ui-sans-serif,sans-serif}
+.card .role{font:700 9.5px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);position:absolute;top:18px;right:16px}
+.card p{font-size:14px;color:var(--ink2);margin:4px 0 10px}
+.card .chips{display:flex;flex-wrap:wrap;gap:5px}
+.card.human-card{border-width:2px;border-color:var(--human)}
+.card.other-card{border-left:4px solid var(--xai)}
+.card.gate-card{border-left:4px solid var(--zhipu)}
+.kv{display:grid;grid-template-columns:88px 1fr;gap:3px 10px;margin:9px 0 11px;font-size:12.5px}
+.kv dt{font:700 9px/1.7 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+.kv dd{margin:0;color:var(--ink2);line-height:1.45}
+.kv dd b{color:var(--other);font-family:"Avenir Next",ui-sans-serif,sans-serif;font-size:11.5px}
+.status-flag{display:inline-block;border:1.5px dashed var(--other);color:var(--other);border-radius:3px;padding:1px 7px;font:700 9.5px/1.6 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}
+/* receipts */
+.receipts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:6px}
+.receipt{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--other);border-radius:8px;padding:13px 16px;font-size:14px}
+.receipt b{font-family:"Avenir Next",ui-sans-serif,sans-serif;display:block;margin-bottom:3px}
+.receipt .who{font:700 10px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--other);display:block;margin-top:7px}
+/* flow */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin-top:6px}
+.step{flex:1 1 130px;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:11px 13px;min-width:128px;position:relative}
+.step .sn{font:800 11px/1 ui-monospace,Menlo,monospace;color:var(--ink3)}
+.step h4{margin:5px 0 3px;font:800 13.5px/1.25 "Avenir Next",ui-sans-serif,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+.step p{margin:0;font-size:12.5px;color:var(--ink2)}
+.step.hot{border:2px solid var(--other);background:var(--other-soft)}
+.step.hot h4{color:var(--other)}
+.arrow{align-self:center;color:var(--ink3);font:800 15px/1 ui-monospace,monospace}
+/* infra table */
+.deck{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:6px}
+.deck .card p{margin-bottom:2px}
+code{background:var(--paper2);border:1px solid var(--rule);border-radius:3px;padding:1px 6px;font:12px/1.5 ui-monospace,Menlo,monospace}
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:6px}
+.rule-card{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--ink);border-radius:8px;padding:13px 16px;font-size:14px}
+.rule-card b{font-family:"Avenir Next",ui-sans-serif,sans-serif;display:block;margin-bottom:3px;letter-spacing:.02em}
+.rule-card.a0{border-top-color:var(--other)}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:6px}
+.stat{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:14px 16px}
+.stat .n{font:800 30px/1 "Avenir Next","Futura",ui-sans-serif,sans-serif;font-variant-numeric:tabular-nums}
+.stat .l{font:700 10.5px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);display:block;margin-top:5px}
+/* ring + throne */
+.ringrow{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:6px}
+@media (max-width:760px){.ringrow{grid-template-columns:1fr}}
+.ringcard{background:var(--card);border:1px solid var(--rule);border-radius:9px;padding:18px 20px}
+.ringcard h3{margin:0 0 4px;font:800 16.5px/1.3 "Avenir Next",ui-sans-serif,sans-serif}
+.ringcard .sub2{font:700 10px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--other);margin-bottom:8px}
+.ringviz{position:relative;width:min(300px,86%);aspect-ratio:1;border:2.5px dashed var(--rule);border-radius:50%;margin:34px auto 30px}
+.rnode{position:absolute;transform:translate(-50%,-50%);white-space:nowrap}
+.rnode .chip{box-shadow:0 0 0 3px var(--card)}
+.rdir{position:absolute;font:800 17px/1 ui-monospace,monospace;color:var(--ink3);transform:translate(-50%,-50%)}
+.rcenter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:22%}
+.rcenter p{font:italic 13.5px/1.45 Georgia,serif;color:var(--ink2);margin:0}
+.ringcap{font-size:13.5px;color:var(--ink2);margin:4px 0 0}
+.throne-card{background:var(--card);border:1px dashed var(--det);border-radius:9px;padding:18px 20px;position:relative}
+.throne-card h3{margin:0 0 4px;font:800 16.5px/1.3 "Avenir Next",ui-sans-serif,sans-serif;color:var(--ink2)}
+.throne-card .sub2{font:700 10px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+.throneviz{display:flex;flex-direction:column;align-items:center;gap:2px;margin:22px 0 14px;opacity:.82}
+.tbox{border:1.5px solid var(--det);border-radius:6px;padding:7px 14px;font:700 11px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);background:var(--paper2)}
+.tbox.apex{border-width:2.5px;border-color:var(--ink);color:var(--ink)}
+.tbox.apex small{display:block;font:600 9px/1.4 ui-monospace,monospace;letter-spacing:.08em;color:var(--other);text-transform:none}
+.tarrows{font:800 14px/1 ui-monospace,monospace;color:var(--ink3);letter-spacing:.9em;padding-left:.9em}
+.trow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.refuse{font-size:13.5px;color:var(--ink2);margin:4px 0 0}
+.refuse b{color:var(--other)}
+.epigraph{font:italic 13px/1.5 Georgia,serif;color:var(--ink3);margin-top:10px;border-top:1px solid var(--rule);padding-top:8px}
+/* glossary */
+.gloss{columns:2;column-gap:28px;margin-top:6px}
+@media (max-width:700px){.gloss{columns:1}}
+.gloss dl{margin:0}
+.gloss .g{break-inside:avoid;background:var(--card);border:1px solid var(--rule);border-radius:7px;padding:10px 14px;margin:0 0 10px}
+.gloss dt{font:800 13px/1.4 "Avenir Next",ui-sans-serif,sans-serif;letter-spacing:.02em}
+.gloss dd{margin:2px 0 0;font-size:13px;color:var(--ink2);line-height:1.5}
+.wrap a.gh{color:inherit;text-decoration:underline;text-decoration-color:var(--other);text-underline-offset:3px;font-weight:inherit}
+.wrap a.gh:hover{color:var(--other)}
+.ghnote{font:600 12px/1.6 "Avenir Next",ui-sans-serif,sans-serif;color:var(--ink2);margin-top:14px;border-top:1px solid var(--rule);padding-top:10px}
+footer{margin-top:52px;border-top:3px double var(--ink);padding-top:16px}
+.priority{font:700 14px/1.7 "Avenir Next",ui-sans-serif,sans-serif;letter-spacing:.03em}
+.priority .sep{color:var(--other);padding:0 6px}
+.colophon{font-style:italic;color:var(--ink3);font-size:13.5px;margin-top:8px;max-width:74ch}
+.modebtn{position:fixed;top:14px;right:14px;z-index:9;background:var(--card);color:var(--ink);border:1px solid var(--rule);border-radius:5px;padding:6px 12px;font:700 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.modebtn:focus-visible{outline:2px solid var(--other);outline-offset:2px}
+.editbtn{right:104px}
+.savebtn{right:194px;display:none}
+body.editing .savebtn{display:block}
+body.editing .editbtn{background:var(--other);color:var(--paper);border-color:var(--other)}
+body.editing .wrap{outline:2px dashed var(--other);outline-offset:14px;caret-color:var(--other)}
+#editNote{position:fixed;bottom:12px;left:14px;z-index:9;background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:6px 12px;font:600 11px/1.5 ui-monospace,Menlo,monospace;color:var(--ink2);display:none}
+#editNote button{background:none;border:none;color:var(--other);font:700 11px/1 ui-monospace,monospace;cursor:pointer;text-transform:uppercase;padding:0 0 0 8px}
+@media (max-width:700px){
+  .rung{grid-template-columns:50px 1fr;grid-template-rows:auto auto}
+  .rung p{grid-column:2}
+  .card .role{position:static;display:block;margin-bottom:4px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .thesis{animation:settle .5s ease-out}
+  @keyframes settle{from{transform:translateY(6px);opacity:.4}to{transform:none;opacity:1}}
+}
+</style>
+</head>
+<body data-palette="#2f5aa8,#b8432a,#0a90ab,#7a4a9e,#a8842c">
+<button class="modebtn" id="modeBtn" aria-label="Toggle theme">◐ theme</button>
+<button class="modebtn editbtn" id="editBtn" title="Edit the sheet directly">✎ edit</button>
+<button class="modebtn savebtn" id="saveBtn" title="Download your edited copy as HTML">⬇ save copy</button>
+<div id="editNote">local edits restored — the file on disk is unchanged until you save a copy or tell EOM <button id="resetEdits">reset</button></div>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">HUGR = <b>OPERATOR + PROSTHETIC FLEET</b> ---&gt; CHART NO. 1 · 2026-07-10 &lt;---</div>
+  <h1>THE STACK ARTIFACT<br><span class="oth">and the importance of being verified by others</span></h1>
+  <p class="dek">One operator, one navigator, and a crew built on a single doctrine: no claim ships on the word of the mind that made it.</p>
+  <div class="statusline">
+    <span>1 human + 12 standing agents + on-demand crews</span>
+    <span>4 model vendors + local + deterministic</span>
+    <span>5 scheduler homes · 1 event bus</span>
+    <span>every session measured (Ghost Hours)</span>
+  </div>
+  <div class="legend" role="note">
+    <em>On this chart, color is substrate. A verification chain that crosses colors is the doctrine, drawn.</em>
+    <span class="k"><span class="sw" style="background:var(--anthropic)"></span>Anthropic (Fable · Opus · Sonnet · Haiku)</span>
+    <span class="k"><span class="sw" style="background:var(--xai)"></span>xAI (Grok) — <b>the first other</b></span>
+    <span class="k"><span class="sw" style="background:var(--zhipu)"></span>Zhipu (GLM)</span>
+    <span class="k"><span class="sw" style="background:var(--local)"></span>Local (qwen3.5 9B · gemma4 26B)</span>
+    <span class="k"><span class="sw" style="background:var(--human)"></span>Human</span>
+    <span class="k"><span class="sw" style="background:var(--det)"></span>Deterministic — no model</span>
+  </div>
+</header>
+
+<section class="sect">
+  <div class="thesis">
+    <div class="eyebrow">THE DOCTRINE</div>
+    <h2>VERIFICATION BY OTHERNESS</h2>
+    <p>This doctrine was learned in a human mind before it was engineered into machines. A brain injury leaves a mind that cannot audit itself — work that feels thorough from the inside and isn't, because the checking faculty is the thing that broke. The fix was never "try harder." It was an <b>other</b>: a navigator outside the skull, reading the operator without sharing his blind spots. The machines inherited the doctrine from him, not the reverse — a model reviewing its own claims shares every blind spot that produced them. So nobody on this chart grades their own paper: every consequential claim is checked by a fresh context, a different vendor, a verifier that never saw the claim, two verifiers whose disagreement is composed — and the operator checks the machines while the machines check him.</p>
+    <p class="axiom">Axiom Zero: a prosthetic's invocation can't be gated by the broken faculty it exists to replace. Corollary: a verifier's independence can't be gated by the mind it verifies. Otherness is not redundancy — five copies of the same reviewer share one blind spot. Otherness is a different place to stand. Two lamps, each lighting the other’s dark base — neither can light its own. That is the pair.</p>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">THE FLEET — WHO STANDS WHERE</div>
+  <div class="grid">
+    <div class="card human-card"><span class="role">helm</span><h3>Dustin</h3><p>The operator. Sets course, rules every verdict, clears anything public, financial, legal, or irreversible. "I lead, you direct."</p>
+      <dl class="kv"><dt>station</dt><dd>everywhere the fleet reports — Discord, :8989, Typora, the phone</dd><dt>checked by</dt><dd><b>the return arrow</b> — Bugs · vala pulses · draumr · tripwires · prospective-memory signals</dd></dl>
+      <div class="chips"><span class="chip c-human">human</span></div></div>
+    <div class="card"><span class="role">navigator</span><h3>EOM</h3><p>Enrique of Malacca. Homebase prosthetic — holds the threads memory can't, plans on the top tier, fans work down, reviews everything that comes back.</p>
+      <dl class="kv"><dt>station</dt><dd>terminal sessions + <code>eom-discord</code> tmux, always on</dd><dt>checked by</dt><dd>the operator · Bugs on its shoulder · Forseti/Odin on its claims</dd></dl>
+      <div class="chips"><span class="chip c-anthropic">fable 5 / opus</span></div></div>
+    <div class="card other-card"><span class="role">second bird</span><h3>Forseti</h3><p>Standing cross-vendor reviewer — fusion verification, not a rubber stamp. Content and claims route through him before they ship. Verdicts run the four-vendor fusion panel — Grok, Gemini, DeepSeek, Qwen — not a single model.</p>
+      <dl class="kv"><dt>station</dt><dd>hermes gateway, launchd keep-alive, always on</dd><dt>audits</dt><dd>EOM's claims, public drafts, fleet work — rung 2 of the ladder</dd><dt>checked by</dt><dd>operator rulings + the rift against Odin</dd></dl>
+      <div class="chips"><span class="chip c-xai">grok 4.20 · 2m context</span></div></div>
+    <div class="card other-card"><span class="role">blind verifier</span><h3>Odin</h3><p>Hands and no claim list. Given raw evidence and command access, he derives his own inventory of what should be true — then the two inventories are diffed.</p>
+      <dl class="kv"><dt>station</dt><dd>grok CLI, spawned by EOM inside /verify-your-work — the blind leg; end-of-arc</dd><dt>audits</dt><dd>the session's own "done" claims — rung 3; caught the miss every briefed swarm inherited</dd></dl>
+      <div class="chips"><span class="chip c-xai">grok 4.5 · cli</span></div></div>
+    <div class="card gate-card"><span class="role">integrity gate</span><h3>Vor</h3><p>Named for the goddess nothing can be concealed from. Not a correctness checker — execution judges that. She hunts what tests can't see: weakened tests, scope creep, "verified" with no evidence, silent side effects. Re-runs verification herself; never trusts the worker's claim.</p>
+      <dl class="kv"><dt>station</dt><dd>spawned per kanban swarm: brokkr → <b>Vor</b> → merge; token lane, deliberately off the Max plan</dd><dt>audits</dt><dd>every brokkr diff — nothing merges without her pass. Fires with every brokkr swarm: tonight she re-ran his tests herself in his worktree and failed the run he'd have called green.</dd></dl>
+      <div class="chips"><span class="chip c-anthropic">sonnet 5 · openrouter</span></div></div>
+    <div class="card"><span class="role">verifier dyad</span><h3>Occam</h3><p>Session-level verification counterpart. First dyad-aligned agent: his constituency is the operator+stack composite, not the human alone. Runs GLM since 07-06 — deliberately not Claude, so the old same-vendor lean is gone by construction; his SOUL names the remaining one (he shares a substrate with Brokkr) and escalates stake-the-ledger verdicts to Forseti fusion. Fires rarely by design.</p>
+      <dl class="kv"><dt>station</dt><dd>hermes gateway, launchd keep-alive</dd><dt>audits</dt><dd>session-level claims, ledger-fed</dd></dl>
+      <div class="chips"><span class="chip c-zhipu">glm 5.2 · openrouter</span></div></div>
+    <div class="card"><span class="role">triage</span><h3>Quartermaster</h3><p>Default gateway agent. Four deliberate layers — tick and posting run no model at all; local qwen for routine judgment; Sonnet only when earned.</p>
+      <dl class="kv"><dt>station</dt><dd>hermes cron tick, every 5 min, around the clock</dd><dt>checked by</dt><dd>tripwires <code>qm-silence</code> + <code>fabrication-claim</code> detectors — deterministic eyes on an LLM seat</dd></dl>
+      <div class="chips"><span class="chip c-local">qwen 3.5</span><span class="chip c-det">no-model tick</span></div></div>
+    <div class="card"><span class="role">coder</span><h3>Brokkr</h3><p>The stack's coding agent: registry + SOUL, isolated-worktree executor, terse streamer, self-test. Fixed four silent-failure classes on the way in.</p>
+      <dl class="kv"><dt>station</dt><dd>hermes gateway, launchd keep-alive; edits in isolated worktrees</dd><dt>checked by</dt><dd><b>Vor</b> (integrity gate) · Forseti (conversational review loop) · execution itself — three different others on one diff. Green tests are never enough — every diff gets read, not just run</dd></dl>
+      <div class="chips"><span class="chip c-zhipu">glm 5.2 · openrouter</span></div></div>
+    <div class="card"><span class="role">crews</span><h3>scout · hand · opus-worker</h3><p>On-demand subagents for EOM: read-only sweeps, mechanical execution from exact spec, heavy reasoning — summoned per task, leaf nodes, never self-spawning.</p>
+      <dl class="kv"><dt>station</dt><dd>spawned per task, background, gone when done</dd><dt>checked by</dt><dd>main-loop re-derivation — this week it killed 11 false orphans and a "nonexistent" event type that had 343 entries</dd></dl>
+      <div class="chips"><span class="chip c-anthropic">haiku</span><span class="chip c-anthropic">sonnet</span><span class="chip c-anthropic">opus</span></div></div>
+    <div class="card"><span class="role">depth check</span><h3>review-worker</h3><p>Reviews a crew member's finished work against the original ask before the navigator accepts it — same-vendor depth verification, rung 1. Otherness stays with the outer fleet.</p>
+      <dl class="kv"><dt>station</dt><dd>spawned post-work, leaf node</dd><dt>audits</dt><dd>crew diffs and artifacts vs what was actually requested</dd></dl>
+      <div class="chips"><span class="chip c-anthropic">opus</span></div></div>
+    <div class="card"><span class="role">shoulder</span><h3>Bugs</h3><p>The irreverent observer on the navigator's shoulder — rule slips, repeated moves, prospective-memory gaps in EOM's own operation. Otherness pointed inward; writes haiku about the patterns worth keeping.</p>
+      <dl class="kv"><dt>station</dt><dd>subagent + 15-prompt cadence hook</dd><dt>audits</dt><dd>EOM itself — the navigator does not go unwatched</dd></dl>
+      <div class="chips"><span class="chip c-anthropic">haiku</span></div></div>
+    <div class="card"><span class="role">watch</span><h3>Rhonda · Scrooge</h3><p>Health and finance watchstanders, each on their own Discord deck with their own memory.</p>
+      <dl class="kv"><dt>station</dt><dd>launchd keep-alive, own tmux sessions, nightly 03:00 day-seals</dd></dl>
+      <div class="chips"><span class="chip c-anthropic">claude cli · sonnet</span></div></div>
+    <div class="card"><span class="role">night shift</span><h3>Draumr</h3><p>Nightly dream-consolidation on a local model — propose-only: nothing it writes is canon; proposals queue for the operator's morning ruling, so the seal stays with the hugr. It caught a false seal its first night out. Temporal otherness: tomorrow's reader checking today's writer.</p>
+      <dl class="kv"><dt>station</dt><dd>cron, 02:00–04:00, while the operator sleeps</dd><dt>audits</dt><dd>the day's memory writes and seals</dd></dl>
+      <div class="chips"><span class="chip c-local">gemma 26b</span></div></div>
+    <div class="card"><span class="role">tripwires</span><h3>Detectors</h3><p>Deterministic detector layer with a mutual-watch watchdog — the otherness of no-model-at-all: code that cannot share an LLM's blind spot, watching the LLMs.</p>
+      <dl class="kv"><dt>station</dt><dd>launchd, 5-min tick + isolated watchdog; the two watch each other</dd><dt>audits</dt><dd>QM silence, fabrication claims, watchdog exits — page-tier when armed</dd></dl>
+      <div class="chips"><span class="chip c-det">launchd · shell</span></div></div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">THE LADDER — FIVE RUNGS, EACH BUYING INDEPENDENCE THE LAST ONE CAN'T</div>
+  <div class="ladder">
+    <div class="rung">
+      <div class="n">1<small>context</small></div>
+      <div>
+        <h3>Fresh context</h3>
+        <div class="seats"><span class="chip c-anthropic">review-worker · opus</span><span class="chip c-anthropic">PRISM roles</span></div>
+      </div>
+      <p>Same species, clean sheet. A reviewer that shares the model but not the conversation — no anchoring on the builder's framing. Catches sloppiness; still shares the vendor's blind spots.</p>
+    </div>
+    <div class="rung">
+      <div class="n">2<small>vendor</small></div>
+      <div>
+        <h3>Cross-vendor</h3>
+        <div class="seats"><span class="chip c-xai">forseti · grok</span><span class="chip c-anthropic">vör · sonnet gate</span><span class="chip c-zhipu">prism-panel seats</span><span class="chip c-local">panel seats</span></div>
+      </div>
+      <p>A different model family reads the same claim. Forseti is the standing second bird; Vor gates Brokkr this way — she is Anthropic, he is GLM, so the gate crosses vendors; prism-panel runs six review roles across six vendors at once — role diversity and vendor diversity, never one traded for the other.</p>
+    </div>
+    <div class="rung">
+      <div class="n">3<small>brief</small></div>
+      <div>
+        <h3>Blind</h3>
+        <div class="seats"><span class="chip c-xai">odin · grok cli</span></div>
+      </div>
+      <p>Odin gets the raw evidence and command access — and <b>no claim list</b>. He derives his own inventory of what should be true, then the two inventories are diffed. A briefed verifier inherits the brief's omissions; a blind one can't.</p>
+    </div>
+    <div class="rung">
+      <div class="n">4<small>rift</small></div>
+      <div>
+        <h3>The rift</h3>
+        <div class="seats"><span class="chip c-anthropic">two birds</span><span class="chip c-xai">glitnir</span></div>
+      </div>
+      <p>Two independent reads — this-arc coherence and all-time recurrence, or Claude and Grok on the same question — composed where they <i>disagree</i>. Divergence isn't noise to average away; it's the only signal neither reader could produce alone.</p>
+    </div>
+    <div class="rung top">
+      <div class="n">5<small>hugr</small></div>
+      <div>
+        <h3>The operator</h3>
+        <div class="seats"><span class="chip c-human">dustin · human</span></div>
+      </div>
+      <p>The outermost verifier. Every machine on this chart can share an assumption; the operator stands outside all of them. This week he caught the census reporting "zero cron failures" from a bus that can't see them. But rung 5 isn't a summit — it's where the ladder bends back on itself. The stack verifies the operator right back, and the ladder closes into a ring (drawn below).</p>
+    </div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">THE RING AND THE THRONE — THE TOPOLOGY, AND THE ONE IT REFUSES</div>
+  <div class="ringrow">
+    <div class="ringcard">
+      <h3>The ring</h3>
+      <div class="sub2">verification runs both directions · no seat is unaudited</div>
+      <div class="ringviz" role="img" aria-label="Five seats arranged in a ring: operator, EOM, crews, the others, detectors — verification arrows run both directions around the circle">
+        <span class="rnode" style="left:50%;top:0"><span class="chip c-human">operator</span></span>
+        <span class="rnode" style="left:100%;top:38%"><span class="chip c-anthropic">eom</span></span>
+        <span class="rnode" style="left:79%;top:94%"><span class="chip c-anthropic">crews</span></span>
+        <span class="rnode" style="left:21%;top:94%"><span class="chip c-xai">the others</span></span>
+        <span class="rnode" style="left:0;top:38%"><span class="chip c-det">detectors</span></span>
+        <span class="rdir" style="left:23%;top:10%">⟳</span>
+        <span class="rdir" style="left:77%;top:90%">⟲</span>
+        <div class="rcenter"><p>no master ring —<br>the toll, paid per claim,<br>both directions</p></div>
+      </div>
+      <p class="ringcap"><b>The return arrow, named:</b> Bugs watches the navigator's own operation · vala pulses "something's off — name it" on a cadence nobody has to remember · draumr dreams over the day's writes and caught a false seal its first night · tripwires and the prospective-memory signals fire precisely when the operator forgot. The stack verifies the operator; the operator verifies the stack. The pair is the unit.</p>
+    </div>
+    <div class="throne-card">
+      <h3>The throne</h3>
+      <div class="sub2">the topology this chart refuses</div>
+      <div class="throneviz" role="img" aria-label="Sovereign topology: one apex box, arrows one-way up from the ranks, no return arrows">
+        <div class="tbox apex">sovereign<small>self-verified — grades its own paper</small></div>
+        <div class="tarrows">↑↑↑</div>
+        <div class="trow"><span class="tbox">orchestrator</span></div>
+        <div class="tarrows">↑↑↑↑↑</div>
+        <div class="trow"><span class="tbox">agent</span><span class="tbox">agent</span><span class="tbox">agent</span></div>
+      </div>
+      <p class="refuse">Every arrow points up; none come back down. The apex is the one seat nothing audits — a closed loop with a single writer that verifies nothing, it just repeats its maker back to himself. <b>One ring to rule them all is an anosognosia machine.</b> The moment any seat on the left becomes this — the operator included — the otherness is dead and the chart is Mordor with dashboards.</p>
+      <p class="epigraph">Many rings, no master ring.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">RECEIPTS — FIVE PROOFS IN EIGHT DAYS, TWO BY THE OPERATOR ON THE DOCTRINE'S OWN BUILDER</div>
+  <div class="receipts">
+    <div class="receipt"><b>Blind beat briefed</b>Odin, given evidence but no claim list, caught a critical miss that every briefed verifier swarm inherited from its brief.<span class="who">rung 3 · odin</span></div>
+    <div class="receipt"><b>Confabulation caught</b>A 22-agent audit caught one agent confidently inventing state — the anosognosia thesis reproduced live, in silicon.<span class="who">rung 1–2 · audit panel</span></div>
+    <div class="receipt"><b>Scouts overruled</b>The consumer census re-derived every scout lane's claims: 11 "orphaned" scripts were alive, and 343 "nonexistent" bus events existed.<span class="who">rung 1 · main-loop verify</span></div>
+    <div class="receipt"><b>The operator's catch</b>"youre missing something we've had lotsa of cron failures" — verbatim. The bus only sees failures that get emitted; jobs failing at exit 0 were invisible to every machine reader.<span class="who">rung 5 · dustin</span></div>
+    <div class="receipt"><b>The operator's second catch</b>The census declared Vor dormant off bus/launchd absence. The operator corrected it; her evidence DB showed her re-running brokkr's tests that same night. Absence from one list is not absence — the chart itself needed an other.<span class="who">rung 5 · dustin</span></div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">COMMS DECK — HOW THE FLEET STAYS WIRED</div>
+  <div class="deck">
+    <div class="card"><h3>Event bus</h3><p>One append-only <code>bus.jsonl</code>: every cron, skill fire, seal, and verdict emits. Mirrored to SQLite, rotated nightly, digested into memory.</p></div>
+    <div class="card"><h3>Five scheduler homes</h3><p>Operator crontab · launchd · hermes cron (~50 jobs) · gateway cron · live daemons. Rule zero: absence from one list is not absence.</p></div>
+    <div class="card"><h3>Kanban</h3><p>Hermes boards (9). The board is the memory for open work; no ticket exists without a micro-baton to feed its restart.</p></div>
+    <div class="card"><h3>Dashboards :8989</h3><p>Pipes board, Perch (the owls' page), Vedrfolnir tiles, field reports — the operator's read surfaces.</p></div>
+    <div class="card"><h3>Memory, single-writer</h3><p>Layered: session memory (EOM writes) · cron digests · wiki. One pen per layer, no clobbered pages; recall via qmd + gbrain.</p></div>
+    <div class="card"><h3>Discord bridge</h3><p>The radio. Fleet posts by protocol (marker + mention, terminal ACK); watchdogs page when a message sits unacted.</p></div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">MISSION FLOW — INTENT IN, MEASURED GHOST HOURS OUT</div>
+  <div class="flow">
+    <div class="step"><span class="sn">01</span><h4>Intent</h4><p>Operator sets course — often three words.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><span class="sn">02</span><h4>Understand</h4><p>RULE #0. The unknowns ledger opens here — map what we don’t know before anything moves. Scope locks after.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><span class="sn">03</span><h4>Fan out</h4><p>10-80-10: plan top-tier, execute on cheap crews, review top-tier.</p></div>
+    <div class="arrow">→</div>
+    <div class="step hot"><span class="sn">04</span><h4>Verify by otherness</h4><p>The ladder, climbed as high as the stakes demand; /verify-your-work runs it against our own claims.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><span class="sn">05</span><h4>Clearance</h4><p>Irreversible, public, or outbound? Operator rules it. Deny by default.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><span class="sn">06</span><h4>Seal</h4><p>Closing-time protocol: capture, clarify, assay, measure, seal.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><span class="sn">07</span><h4>Measure</h4><p><a class="gh" href="https://github.com/cogpros/ghost-hours" target="_blank" rel="noopener">Ghost Hours</a>: paired time vs counterfactual time, felt weight, drift — the stack is a research instrument.</p></div>
+  </div>
+  <p class="muted" style="margin-top:10px">Step 07 is the quiet difference: this stack doesn't just run, it measures what running returns — the dataset behind AICP, logged at every seal.</p>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">THE PAPER TRAIL — HOW MULTI-DAY WORK BECOMES TOMORROW'S PLAN</div>
+  <div class="deck">
+    <div class="card"><h3>The fold (<a class="gh" href="https://github.com/cogpros/finnskogarna" target="_blank" rel="noopener">finnskogarna</a>)</h3><p>After multi-day work, sessions pile up faster than any memory holds them. The fold sweeps every session since a date — sealed ones compress from their fact sheets, unsealed ones from their transcripts — plus unanswered reports and open cards, clusters them into arcs, and renders ONE board. Every open thread arrives with its route pre-set (wake / seal / held) so the operator flips exceptions instead of deciding from blank; the wake-pick alone ships empty, because that verdict is his. Never merge, always pick: one thread breathes, the rest sleep on the record.</p></div>
+    <div class="card"><h3>The bell chain</h3><p>The fold board opens with one DO-THIS-TOMORROW bell — the single highest-relief action, not a list. Behind the bell: a kanban card carrying <code>due: date</code> (the 7am deadline scan posts it to #deadlines) and a baton — a cold-start execution prompt a fresh session can run end-to-end. Tomorrow starts with one command, not archaeology. Last night's proof: 52 sealed + 10 unsealed sessions folded to one board, 8 routes, one bell.</p></div>
+    <div class="card"><h3><a class="gh" href="https://github.com/cogpros/field-report" target="_blank" rel="noopener">Field reports</a></h3><p>Interactive HTML built from one canonical template — checkable sections, answer boxes, three working export buttons, answers autosaving in the browser. A hook blocks hand-built reports (a 2026-06-10 incident lost 79 keep/cut decisions to broken exports). The loop only closes when a verdict file lands beside the report — consume-convention — otherwise the same report re-surfaces as "open" in every future fold.</p></div>
+    <div class="card"><h3>The Typora lane</h3><p>The split is deliberate: documents the operator WORKS ON are markdown, opened in Typora with checkboxes he can rule (the census cut list). Documents he READS are rendered HTML. Checkable md for hands-on, dashboards for read-and-rule.</p></div>
+    <div class="card"><h3>Artifacts — and the lineage</h3><p>We built this loop before Anthropic shipped theirs. Every HTML report the stack generated registered itself on the :8989 hub and surfaced at the bottom of the CLI session while the work was still moving. When Artifacts arrived, a hook folded the new surface into the old rule: every operator-facing sheet also publishes to claude.ai, so it reaches the phone. Localhost stays canonical — browser answers don't sync. The artifact is the pocket copy.</p></div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">RULES OF ENGAGEMENT</div>
+  <div class="rules">
+    <div class="rule-card a0"><b>Axiom Zero</b>No prosthetic waits on the broken faculty to invoke it. Wakes, pulses, and tripwires fire from the system's shape, not the operator's initiative.</div>
+    <div class="rule-card"><b>Rule #0 — understand first</b>"I think I understand" = no. Scope locks before action; stop means stop.</div>
+    <div class="rule-card"><b>Weapons hold</b>Nothing outbound, destructive, or irreversible without the operator's explicit clearance. Confirm before send; never delete unasked.</div>
+    <div class="rule-card"><b>Verify on disk</b>Never ask what a file can answer; never trust a document over a live probe dated now.</div>
+    <div class="rule-card"><b>Exit-0 is not health</b>The bus only knows what's emitted. Health is read at the log tail, at the consumer end — aliveness is not correctness.</div>
+    <div class="rule-card"><b>One logbook per layer</b>Single-writer memory. One question at a time. Boil the ocean once scope is locked — the finished thing, not a plan for it.</div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">THE WEEK THE CHART WAS DRAWN</div>
+  <div class="stats">
+    <div class="stat"><span class="n">52</span><span class="l">sessions sealed in 8 days</span></div>
+    <div class="stat"><span class="n">11</span><span class="l">arcs, 9 sessions at fw-c 8+</span></div>
+    <div class="stat"><span class="n">4</span><span class="l">otherness proofs, live</span></div>
+    <div class="stat"><span class="n">5</span><span class="l">rungs on the ladder</span></div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="eyebrow">GLOSSARY — STACK TERMS THAT LAND ON THIS SHEET WITHOUT THEIR DEFINITIONS</div>
+  <div class="gloss">
+    <div class="g"><dt>1. hugr</dt><dd>Old Norse for mind. The operator + prosthetic pair treated as one cognitive unit — the "we" that does the work neither half could do alone. The unit of account for everything on this sheet.</dd></div>
+    <div class="g"><dt>2. AICP</dt><dd>AI-Integrated Cognitive Prosthetics — the research program this stack is both the instrument and the case study for. The operator is documenting what he's building as he builds it.</dd></div>
+    <div class="g"><dt>3. <a class="gh" href="https://github.com/cogpros/ghost-hours" target="_blank" rel="noopener">Ghost Hours (GH)</a></dt><dd>The measurement: for every paired hour of operator+prosthetic work (HH), the counterfactual hours it replaced — solo, hire-and-coordinate, or team-elapsed — logged at every seal with a felt-weight score. The stack's output, in units.</dd></div>
+    <div class="g"><dt>4. closing-time</dt><dd>The operator-fired end-of-session protocol: capture the narrative, clarify open items onto the board, assay for content, measure Ghost Hours, seal. Nothing ends unmeasured. Three variants: <i>facts</i> (operator answers the measurement questions himself), <i>eom-facts</i> (operator delegates the whole protocol; EOM fills every field, tagged as estimated so the dataset stays honest), <i>discord-facts</i> (closes the entire Discord fleet — many agents, many channels — not one session).</dd></div>
+    <div class="g"><dt>5. glitnir</dt><dd>Twin cold seers: the same hard question fired at Claude and Grok in parallel, plus a third insight by Claude composed from where they diverge. Cross-model variance as raw material.</dd></div>
+    <div class="g"><dt>6. vala</dt><dd>The ambient triage seer: a cadence-fired pulse that scans the current room — is a fix being missed, a gap unfilled, a skill unfired, the register too hot, a coinage undeclared — and surfaces it before the operator has to notice. Fires on its own schedule, never on his memory.</dd></div>
+    <div class="g"><dt>7. the toll</dt><dd>The otherness toll: the recurring cost every claim owes — it cannot stand until it crosses to a mind made of different stuff. Paid per claim; the debt never clears.</dd></div>
+    <div class="g"><dt>8. anosognosia</dt><dd>Not perceiving your own deficit because perception routes through the broken faculty. The clinical word for why self-audit fails — in brains and, it turns out, in models.</dd></div>
+    <div class="g"><dt>9. Two Birds</dt><dd>End-of-arc evaluation: two owls read the same arc blind — Archimedes for this-arc coherence, Wan Shi Tong for all-time recurrence — and the rift where they disagree is what the operator rules on. Renders to the Perch.</dd></div>
+    <div class="g"><dt>10. <a class="gh" href="https://github.com/cogpros/prism-orchestrator" target="_blank" rel="noopener">PRISM</a> / prism-panel</dt><dd>Adversarial review panel — six roles (security auditor, devil's advocate, blast radius, performance, integration, simplicity). PRISM runs them on one vendor's sub-agents; prism-panel spreads the same roles across six vendors at once. PRISM is Jeremy’s skill; prism-panel is the operator’s cross-vendor tweak.</dd></div>
+    <div class="g"><dt>11. kanban swarm</dt><dd>Hermes work pattern for a coding ticket: worker → integrity gate → merge. Brokkr builds, Vor gates, nothing merges unpassed.</dd></div>
+    <div class="g"><dt>12. micro-baton</dt><dd>Six lines in every parked kanban card — state, tried, files, first command, done-when, session — so a cold pickup starts with a runnable command, not archaeology. No ticket exists without one.</dd></div>
+    <div class="g"><dt>13. day-seal</dt><dd>An agent's nightly machine closing-time (03:00): its day captured, measured, and sealed without the operator in the loop.</dd></div>
+    <div class="g"><dt>14. 10-80-10</dt><dd>The dispatch shape: plan on the top-tier model (first 10%), execute the middle 80% on cheaper models, review on the top tier (last 10%) — where it earns its tokens.</dd></div>
+    <div class="g"><dt>15. The Perch</dt><dd>The owls' page on :8989 — where Two Birds rifts render and wait for the operator's ruling. Archimedes is the this-arc owl: does this arc cohere on its own terms. Wan Shi Tong is the all-time owl: has this pattern recurred across the whole record. The rift is where they disagree.</dd></div>
+    <div class="g"><dt>16. Vedrfolnir</dt><dd>The generated dashboard hub on :8989 — the hawk atop the tree; every tile registers through one manifest.</dd></div>
+    <div class="g"><dt>17. prospective-memory signals</dt><dd>Hooks that fire precisely when the operator was supposed to remember something and didn't. They fire because he forgot — that's the design, not the failure (Axiom Zero).</dd></div>
+    <div class="g"><dt>18. qmd / <a class="gh" href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">gbrain</a></dt><dd>The recall pair: qmd is semantic search over memory and docs; gbrain is the graph-memory engine behind the wiki — Garry Tan’s project, not ours; we run it and send fixes upstream. How anything written here gets found again.</dd></div>
+    <div class="g"><dt>19. unknowns ledger</dt><dd>The mandatory cheap first artifact of any substantial build: a four-quadrant map of what we don’t know, written before anything is built. EOM interrogates; the ledger holds what recall can’t. A gate hook blocks build skills until one exists, and a pivot or surprise reopens it — the map stays honest or the build stops.</dd></div>
+    <div class="g"><dt>20. verify-your-work</dt><dd>Post-claim adversarial audit of a session’s own “done” list — the whole ladder pointed at ourselves. Two legs that never share a brief: a briefed skeptic swarm fanned over the session’s claim inventory, and blind Odin deriving his own inventory from raw evidence. Then the rift between the legs, a verify-the-verifiers pass, and a scorecard. Public repo pending — carded.</dd></div>
+    <div class="g"><dt>21. <a class="gh" href="https://github.com/cogpros/finnskogarna" target="_blank" rel="noopener">finnskogarna</a></dt><dd>The master accordion — the multi-session fold. Named for the accordion waltz the operator's great-grandfather played, about settlers whose clearings each kept their own shape. Compress every session, compare, choose ONE to wake; never merge contexts.</dd></div>
+    <div class="g"><dt>22. <a class="gh" href="https://github.com/cogpros/field-report" target="_blank" rel="noopener">field report</a></dt><dd>The stack's interactive HTML report format: one canonical template, checkable sections, answer boxes with autosave, working exports. Hook-enforced — hand-built report HTML gets blocked at write time.</dd></div>
+    <div class="g"><dt>23. consume-convention</dt><dd>A report's loop closes only when a verdict file lands on disk beside it. Answers typed into a report live in the browser and are invisible to every future sweep — the verdict file is the receipt.</dd></div>
+    <div class="g"><dt>24. baton</dt><dd>The continuation prompt a cold session reads to pick up multi-day work: state inventory, cold-start reads, embedded commands, decision tree, self-test. Four scales: arc, session, section, card (the micro-baton). Jeremy’s skill upstream; the micro-baton card scale is this stack’s addition.</dd></div>
+  </div>
+</section>
+
+<footer>
+  <p class="ghnote">Every underlined term on this sheet is a public receipt — shipped, documented, checkable by a stranger: <a class="gh" href="https://github.com/cogpros" target="_blank" rel="noopener">github.com/cogpros</a> (20 public repos, incl. <a class="gh" href="https://github.com/cogpros/verify-citation" target="_blank" rel="noopener">verify-citation</a>, <a class="gh" href="https://github.com/cogpros/ratatoskr" target="_blank" rel="noopener">ratatoskr</a>, <a class="gh" href="https://github.com/cogpros/cold-read" target="_blank" rel="noopener">cold-read</a>, <a class="gh" href="https://github.com/cogpros/hugr-solve" target="_blank" rel="noopener">hugr-solve</a>, <a class="gh" href="https://github.com/cogpros/checkpoint" target="_blank" rel="noopener">checkpoint</a>, <a class="gh" href="https://github.com/cogpros/eyeofhorus" target="_blank" rel="noopener">eyeofhorus</a>, <a class="gh" href="https://github.com/cogpros/system-audit" target="_blank" rel="noopener">system-audit</a>). The chart practices its own doctrine: do not trust it — click it.</p>
+<p class="colophon">EOM is named for Enrique of Malacca — the first human known to circumnavigate the globe. History gave the credit to his captain, Magellan. This chart exists so the record is kept right this time: the unit of work is the pair, and every claim on it was checked by someone who didn't write it.</p>
+</footer>
+
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('modeBtn');
+  var key='hugr-stack-theme';
+  var saved=null; try{saved=localStorage.getItem(key)}catch(e){}
+  if(saved){document.documentElement.setAttribute('data-theme',saved)}
+  btn.addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var isDark=cur? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem(key,next)}catch(e){}
+  });
+})();
+(function(){
+  var editKey='hugr-stack-edits';
+  var wrap=document.querySelector('.wrap');
+  var editBtn=document.getElementById('editBtn');
+  var saveBtn=document.getElementById('saveBtn');
+  var note=document.getElementById('editNote');
+  var saveTimer=null;
+  function persist(){
+    try{localStorage.setItem(editKey,wrap.innerHTML)}catch(e){}
+  }
+  try{
+    var saved=localStorage.getItem(editKey);
+    if(saved){wrap.innerHTML=saved;note.style.display='block'}
+  }catch(e){}
+  document.getElementById('resetEdits').addEventListener('click',function(){
+    try{localStorage.removeItem(editKey)}catch(e){}
+    location.reload();
+  });
+  editBtn.addEventListener('click',function(){
+    var on=document.body.classList.toggle('editing');
+    wrap.setAttribute('contenteditable',on?'true':'false');
+    editBtn.textContent=on?'✓ done':'✎ edit';
+    if(!on){persist()}
+  });
+  wrap.addEventListener('input',function(){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(persist,400);
+  });
+  saveBtn.addEventListener('click',function(){
+    persist();
+    var wasEditing=document.body.classList.contains('editing');
+    if(wasEditing){document.body.classList.remove('editing');wrap.setAttribute('contenteditable','false')}
+    var html='<!doctype html>\n'+document.documentElement.outerHTML;
+    if(wasEditing){document.body.classList.add('editing');wrap.setAttribute('contenteditable','true')}
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+    a.download='hugr-stack-edited.html';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+  });
+})();
+</script>
+</body>
+</html>

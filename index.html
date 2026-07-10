@@ -166,13 +166,6 @@ footer{margin-top:52px;border-top:3px double var(--ink);padding-top:16px}
 .colophon{font-style:italic;color:var(--ink3);font-size:13.5px;margin-top:8px;max-width:74ch}
 .modebtn{position:fixed;top:14px;right:14px;z-index:9;background:var(--card);color:var(--ink);border:1px solid var(--rule);border-radius:5px;padding:6px 12px;font:700 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 .modebtn:focus-visible{outline:2px solid var(--other);outline-offset:2px}
-.editbtn{right:104px}
-.savebtn{right:194px;display:none}
-body.editing .savebtn{display:block}
-body.editing .editbtn{background:var(--other);color:var(--paper);border-color:var(--other)}
-body.editing .wrap{outline:2px dashed var(--other);outline-offset:14px;caret-color:var(--other)}
-#editNote{position:fixed;bottom:12px;left:14px;z-index:9;background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:6px 12px;font:600 11px/1.5 ui-monospace,Menlo,monospace;color:var(--ink2);display:none}
-#editNote button{background:none;border:none;color:var(--other);font:700 11px/1 ui-monospace,monospace;cursor:pointer;text-transform:uppercase;padding:0 0 0 8px}
 @media (max-width:700px){
   .rung{grid-template-columns:50px 1fr;grid-template-rows:auto auto}
   .rung p{grid-column:2}
@@ -186,9 +179,7 @@ body.editing .wrap{outline:2px dashed var(--other);outline-offset:14px;caret-col
 </head>
 <body data-palette="#2f5aa8,#b8432a,#0a90ab,#7a4a9e,#a8842c">
 <button class="modebtn" id="modeBtn" aria-label="Toggle theme">◐ theme</button>
-<button class="modebtn editbtn" id="editBtn" title="Edit the sheet directly">✎ edit</button>
-<button class="modebtn savebtn" id="saveBtn" title="Download your edited copy as HTML">⬇ save copy</button>
-<div id="editNote">local edits restored — the file on disk is unchanged until you save a copy or tell EOM <button id="resetEdits">reset</button></div>
+
 <div class="wrap">
 
 <header>
@@ -456,7 +447,7 @@ body.editing .wrap{outline:2px dashed var(--other);outline-offset:14px;caret-col
 </section>
 
 <footer>
-  <p class="ghnote">Every underlined term on this sheet is a public receipt — shipped, documented, checkable by a stranger: <a class="gh" href="https://github.com/cogpros" target="_blank" rel="noopener">github.com/cogpros</a> (20 public repos, incl. <a class="gh" href="https://github.com/cogpros/verify-citation" target="_blank" rel="noopener">verify-citation</a>, <a class="gh" href="https://github.com/cogpros/ratatoskr" target="_blank" rel="noopener">ratatoskr</a>, <a class="gh" href="https://github.com/cogpros/cold-read" target="_blank" rel="noopener">cold-read</a>, <a class="gh" href="https://github.com/cogpros/hugr-solve" target="_blank" rel="noopener">hugr-solve</a>, <a class="gh" href="https://github.com/cogpros/checkpoint" target="_blank" rel="noopener">checkpoint</a>, <a class="gh" href="https://github.com/cogpros/eyeofhorus" target="_blank" rel="noopener">eyeofhorus</a>, <a class="gh" href="https://github.com/cogpros/system-audit" target="_blank" rel="noopener">system-audit</a>). The chart practices its own doctrine: do not trust it — click it.</p>
+  <p class="ghnote">Every underlined term on this sheet is a public receipt — shipped, documented, checkable by a stranger: <a class="gh" href="https://github.com/cogpros" target="_blank" rel="noopener">github.com/cogpros</a> (20 public repos, incl. <a class="gh" href="https://github.com/cogpros/verify-citation" target="_blank" rel="noopener">verify-citation</a>, <a class="gh" href="https://github.com/cogpros/ratatoskr" target="_blank" rel="noopener">ratatoskr</a>, <a class="gh" href="https://github.com/cogpros/cold-read" target="_blank" rel="noopener">cold-read</a>, <a class="gh" href="https://github.com/cogpros/hugr-solve" target="_blank" rel="noopener">hugr-solve</a>, <a class="gh" href="https://github.com/cogpros/checkpoint" target="_blank" rel="noopener">checkpoint</a>, <a class="gh" href="https://github.com/cogpros/eyeofhorus" target="_blank" rel="noopener">eyeofhorus</a>, <a class="gh" href="https://github.com/cogpros/system-audit" target="_blank" rel="noopener">system-audit</a>). The chart practices its own doctrine: do not trust it — click it. Comments and arguments welcome: <a class="gh" href="https://github.com/cogpros/hugr-stack/discussions" target="_blank" rel="noopener">GitHub Discussions</a>.</p>
 <p class="colophon">EOM is named for Enrique of Malacca — the first human known to circumnavigate the globe. History gave the credit to his captain, Magellan. This chart exists so the record is kept right this time: the unit of work is the pair, and every claim on it was checked by someone who didn't write it.</p>
 </footer>
 
@@ -473,46 +464,6 @@ body.editing .wrap{outline:2px dashed var(--other);outline-offset:14px;caret-col
     var next=isDark?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     try{localStorage.setItem(key,next)}catch(e){}
-  });
-})();
-(function(){
-  var editKey='hugr-stack-edits';
-  var wrap=document.querySelector('.wrap');
-  var editBtn=document.getElementById('editBtn');
-  var saveBtn=document.getElementById('saveBtn');
-  var note=document.getElementById('editNote');
-  var saveTimer=null;
-  function persist(){
-    try{localStorage.setItem(editKey,wrap.innerHTML)}catch(e){}
-  }
-  try{
-    var saved=localStorage.getItem(editKey);
-    if(saved){wrap.innerHTML=saved;note.style.display='block'}
-  }catch(e){}
-  document.getElementById('resetEdits').addEventListener('click',function(){
-    try{localStorage.removeItem(editKey)}catch(e){}
-    location.reload();
-  });
-  editBtn.addEventListener('click',function(){
-    var on=document.body.classList.toggle('editing');
-    wrap.setAttribute('contenteditable',on?'true':'false');
-    editBtn.textContent=on?'✓ done':'✎ edit';
-    if(!on){persist()}
-  });
-  wrap.addEventListener('input',function(){
-    clearTimeout(saveTimer);
-    saveTimer=setTimeout(persist,400);
-  });
-  saveBtn.addEventListener('click',function(){
-    persist();
-    var wasEditing=document.body.classList.contains('editing');
-    if(wasEditing){document.body.classList.remove('editing');wrap.setAttribute('contenteditable','false')}
-    var html='<!doctype html>\n'+document.documentElement.outerHTML;
-    if(wasEditing){document.body.classList.add('editing');wrap.setAttribute('contenteditable','true')}
-    var a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
-    a.download='hugr-stack-edited.html';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
   });
 })();
 </script>
